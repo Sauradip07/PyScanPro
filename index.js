@@ -10,6 +10,7 @@ const mongoose = require("mongoose");
 const app = express();
 const port = 8000;
 
+// use cors
 app.use(cors());
 app.options("*", cors());
 // support parsing of application/json type post data
@@ -48,8 +49,8 @@ stud.save().then(
 
 
 app.get("/", async(req, res) => {
-  let result = await Student.find();
-  res.status(200).json(result);
+  //let result = await Student.find();
+  //res.status(200).json(result);
 
   try{
     let result = await Student.find();
@@ -57,13 +58,6 @@ app.get("/", async(req, res) => {
   } catch (error){
     res.status(500).json(error);
   }
-  //  Student.find({}, (err, found) => {
-  //     if (!err) {
-  //        res.send(found);
-  //     }
-  //     console.log(err);
-  //     res.send("Some error occured!");
-  //  }).catch((err) => console.log("Error occured, " + err));
 });
 
 app.listen(port, () => {
