@@ -1,42 +1,43 @@
-require("dotenv").config(); // environment variable
-// require packages
-const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser");
+import dotenv from "dotenv";
+import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import bodyParser from 'body-parser';
+import connectDB from "./db/index.js";
+import { User } from "./models/usermodel.js"
 
-// initialise express
-const mongoose = require("mongoose");
-
+dotenv.config({
+  path: './.env'
+})
 const app = express();
-const port = 8000;
+const port = 8001;
 
 // use cors
 app.use(cors());
 app.options("*", cors());
+
 // support parsing of application/json type post data
 app.use(bodyParser.json());
+
 //support parsing of application/x-www-form-urlencoded post data
 app.use(bodyParser.urlencoded({ extended: true }));
-//  mondodb connect
-mongoose.connect(process.env.MONGODB_URL)
-   .then(() => {
-      console.log("connected"); // Success!
-   })
-   .catch((err) => {
-      console.log("err", err);
-   });
-// create a schema
-const studentSchema = new mongoose.Schema({
-  roll_no: Number,
-  name: String,
-  year: Number,
-  subjects: [String]
-});
 
-// create a model with studentSchema
-const Student = mongoose.model("Student", studentSchema);
-// create a schema
-const stud = new Student({
+// use cookie parser
+app.use(cookieParser());
+
+
+try{
+  const connectdb = await connectDB();
+  console.log(`⚙️ Server is running at port : ${process.env.PORT}`);
+} catch(err){
+  console.log("MONGO db connection failed !!! ", err);
+}
+
+
+
+//create a schema 
+// values are gets in frontend
+const stud = new User({
    roll_no: 1001,
    name: "Madison Hyde",
    year: 3,
@@ -47,17 +48,15 @@ stud.save().then(
    (err) => console.log(err)
 );
 
+app.get("/", async (req, res) => {
 
-app.get("/", async(req, res) => {
-  //let result = await Student.find();
-  //res.status(200).json(result);
-
-  try{
-    let result = await Student.find();
-    res.status(200).json(result);
-  } catch (error){
-    res.status(500).json(error);
-  }
+   try {
+      let result = await User.find();
+      res.status(200).json(result);
+   } catch (error) {
+      res.status(500).json(error);
+   }
+  
 });
 
 app.listen(port, () => {
