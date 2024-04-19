@@ -89,7 +89,57 @@ router.post("/signup", (req, res) => {
 //signin route
 
 router.post("/signin", (req, res) => {
-   res.send("Signin");
+   let { email, password } = req.body;
+   email = email.trim();
+   password = password.trim();
+
+   if (email == "" || password == "") {
+      res.json({
+         status: "Failed",
+         message: "Empty input fields!",
+      });
+   } else {
+      //check if user exists
+      User.find({ email })
+         .then((data) => {
+            if (data) {
+               //if the data is exist
+               const hashedPassword = data[0].password;
+               bcrypt
+                  .compare(password, hashedPassword)
+                  .then((result) => {
+                     if (result) {
+                        res.json({
+                           status: "Success",
+                           message: "User is authenticated Signin Sucessfully!",
+                        });
+                     } else {
+                        res.json({
+                           status: "Failed",
+                           message: "Invalid Password!",
+                        });
+                     }
+                  })
+                  .catch((err) => {
+                     res.json({
+                        status: "Failed",
+                        message: "An error occurred while comparing passwords!",
+                     });
+                  });
+            } else {
+               res.json({
+                  status: "Failed",
+                  message: "Invalid credentials entered!",
+               });
+            }
+         })
+         .catch((err) => {
+            res.json({
+               status: "Failed",
+               message: "An error occurred while checking for exsiting users !",
+            });
+         });
+   }
 });
 
 export default router;
