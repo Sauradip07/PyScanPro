@@ -4,6 +4,8 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import connectDB from "./db/index.js";
+import session from "express-session";
+import passport from "passport";
 //import { User } from "./models/usermodel.js";
 //const UserRouter = require("./api/User.js");
 import router from "./api/User.js";
@@ -34,6 +36,17 @@ try {
 }
 
 app.use("/user", router);
+
+app.use(
+   session({
+      secret: "Sauradip123",
+      resave: false,
+      saveUninitialized: true,
+      cookie: { secure: false },
+   })
+);
+app.use(passport.initialize()) // init passport on every route call
+app.use(passport.session())   
 
 // //create a schema
 // // values are gets in frontend

@@ -4,7 +4,13 @@ const router = express.Router();
 // mongodb user model
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
+import passport from "passport";
 //signup route
+
+function isLogined(req, res, next) {
+   req.user ? next() : res.sendStatus(401);
+}
+
 router.post("/signup", (req, res) => {
    let { name, email, password } = req.body;
    name = name.trim();
@@ -140,6 +146,40 @@ router.post("/signin", (req, res) => {
             });
          });
    }
+});
+
+// auth with google
+router.get("/auth/google", (req, res) => {
+   //handle google auth
+   passport.authenticate("google", {
+      scope: ["profile", "email"],
+   });
+});
+
+router.get(
+   "/auth/google/callback",
+   passport.authenticate("google", { failureRedirect: "/login" }),
+   (req, res) => {
+      // Successful authentication, redirect home.
+      successRedirect: "/dashboard";
+      failureRedirect: "/auth/google/failure";
+      res.redirect("/");
+   }
+);
+
+router.get("/auth/dashboard", isLogined, (req, res) => {
+   let name = req.user.displayName;
+   res.send(`Welcome ${name}`);
+});
+
+//crete a failure route for google auth
+router.get("/auth/google/failure", (req, res) => {
+   res.send("Failed to authenticate..");
+});
+
+router.get("/logout", (req, res) => {
+   req.session.distory();
+   res.send("Logged out successfully");
 });
 
 export default router;
