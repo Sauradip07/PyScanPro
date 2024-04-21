@@ -54,5 +54,6 @@ This backend includes functionality for optical character recognition using Tess
 Contributing
 Contributions are welcome! If you have any suggestions, improvements, or feature requests, feel free to open an issue or create a pull request.
 
-License
-This project is licensed under the MIT License.
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
